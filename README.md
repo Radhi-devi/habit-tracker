@@ -1,4 +1,4 @@
-# 💜 HabitFlow — Habit & Activity Tracker (Purple Edition)
+#  HabitFlow — Habit & Activity Tracker (Purple Edition)
 
 A clean, modern, responsive Habit & Activity Tracker web application built with **React**, **Vite**, **Tailwind CSS**, and **Recharts**. Fully functional offline with local account isolation and cross-browser cloud synchronization using **Google Firebase**.
 
