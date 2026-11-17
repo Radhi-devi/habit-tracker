@@ -30,22 +30,17 @@ import { useHabits } from '../context/HabitContext';
 import { 
   getDatesInMonth, 
   getDailyMetrics, 
-  parseDateKey, 
   MONTH_NAMES, 
-  MONTH_NAMES_SHORT,
-  getTodayKey,
-  shiftDateKey
-} from '../utils/dateUtils';
+} from '../utils/dateUtils.js';
 
 export default function DashboardView() {
   const { activities, logs, streakMetrics, theme } = useHabits();
   const isDark = theme === 'dark';
 
-  // State for Daily Percentage Chart filter (month or last 14/30 days)
   const today = new Date();
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
-  const [chartType, setChartType] = useState('area'); // 'area' | 'bar'
+  const [chartType, setChartType] = useState('area');
 
   // 1. Overall All-time Metrics
   const overallStats = useMemo(() => {
@@ -134,11 +129,10 @@ export default function DashboardView() {
     });
   }, [selectedYear, selectedMonth, activities, logs]);
 
-  // Grid styling for Recharts based on theme
-  const gridColor = isDark ? '#27272a' : '#f4f4f5';
-  const textColor = isDark ? '#a1a1aa' : '#71717a';
-  const tooltipBg = isDark ? '#18181b' : '#ffffff';
-  const tooltipBorder = isDark ? '#27272a' : '#e4e4e7';
+  const gridColor = isDark ? '#2e1c4a' : '#f3e8ff';
+  const textColor = isDark ? '#c084fc' : '#7e22ce';
+  const tooltipBg = isDark ? '#150f26' : '#ffffff';
+  const tooltipBorder = isDark ? '#4c1d95' : '#e9d5ff';
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300 pb-12">
@@ -148,8 +142,8 @@ export default function DashboardView() {
         <h2 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 font-sans">
           Analytics & Dashboard
         </h2>
-        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-          Long-term trends, habit consistency, and completion metrics across all time.
+        <p className="text-xs sm:text-sm text-purple-700/80 dark:text-purple-300/80 mt-1">
+          Habit consistency, long-term trends, and completion metrics across all time.
         </p>
       </div>
 
@@ -157,9 +151,9 @@ export default function DashboardView() {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
         
         {/* Card 1: Total Completed */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-700/60 dark:text-purple-300/60">
               Completed
             </span>
             <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
@@ -175,9 +169,9 @@ export default function DashboardView() {
         </div>
 
         {/* Card 2: Total Not Completed */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-700/60 dark:text-purple-300/60">
               Missed
             </span>
             <div className="p-2 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
@@ -193,27 +187,27 @@ export default function DashboardView() {
         </div>
 
         {/* Card 3: Overall Completion % */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-200/80 dark:border-purple-800/60 shadow-xs bg-gradient-to-br from-purple-50/50 to-transparent dark:from-purple-950/20">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
               Success Rate
             </span>
-            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="p-2 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400">
               <Percent className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400">
+            <div className="text-2xl sm:text-3xl font-black text-purple-700 dark:text-purple-300">
               {overallStats.overallPercentage}%
             </div>
-            <p className="text-[11px] text-zinc-500 mt-0.5">Overall all-time average</p>
+            <p className="text-[11px] text-zinc-500 mt-0.5">All-time average</p>
           </div>
         </div>
 
         {/* Card 4: Current Streak */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-700/60 dark:text-purple-300/60">
               Current Streak
             </span>
             <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
@@ -230,12 +224,12 @@ export default function DashboardView() {
         </div>
 
         {/* Card 5: Best Streak */}
-        <div className="col-span-2 lg:col-span-1 p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
+        <div className="col-span-2 lg:col-span-1 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-700/60 dark:text-purple-300/60">
               Best Streak
             </span>
-            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+            <div className="p-2 rounded-xl bg-purple-500/15 text-purple-600 dark:text-purple-400">
               <Trophy className="w-4 h-4" />
             </div>
           </div>
@@ -251,24 +245,23 @@ export default function DashboardView() {
       </div>
 
       {/* 2. Daily Completion % Chart (Line / Area / Bar) */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs">
+      <div className="bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-blue-500" />
+              <TrendingUp className="w-5 h-5 text-purple-500" />
               Daily Completion Rate
             </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            <p className="text-xs text-purple-700/70 dark:text-purple-300/70 mt-0.5">
               Day-by-day progress percentage for {MONTH_NAMES[selectedMonth]} {selectedYear}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Month selector */}
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 focus:outline-hidden"
+              className="text-xs font-bold px-3 py-1.5 rounded-xl border border-purple-200 dark:border-purple-900/60 bg-purple-50/50 dark:bg-purple-950/30 text-purple-900 dark:text-purple-200 focus:outline-hidden"
             >
               {MONTH_NAMES.map((name, i) => (
                 <option key={name} value={i}>
@@ -280,7 +273,7 @@ export default function DashboardView() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="text-xs font-semibold px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 focus:outline-hidden"
+              className="text-xs font-bold px-3 py-1.5 rounded-xl border border-purple-200 dark:border-purple-900/60 bg-purple-50/50 dark:bg-purple-950/30 text-purple-900 dark:text-purple-200 focus:outline-hidden"
             >
               {[today.getFullYear() - 1, today.getFullYear(), today.getFullYear() + 1].map((y) => (
                 <option key={y} value={y}>
@@ -290,12 +283,12 @@ export default function DashboardView() {
             </select>
 
             {/* Chart Type Toggle */}
-            <div className="flex items-center p-0.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+            <div className="flex items-center p-0.5 rounded-xl bg-purple-100/60 dark:bg-purple-950/40 border border-purple-200/50 dark:border-purple-900/40">
               <button
                 onClick={() => setChartType('area')}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all ${
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
                   chartType === 'area'
-                    ? 'bg-white dark:bg-zinc-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                    ? 'bg-white dark:bg-purple-900/70 text-purple-700 dark:text-purple-200 shadow-xs'
                     : 'text-zinc-500'
                 }`}
               >
@@ -303,9 +296,9 @@ export default function DashboardView() {
               </button>
               <button
                 onClick={() => setChartType('bar')}
-                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all ${
+                className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
                   chartType === 'bar'
-                    ? 'bg-white dark:bg-zinc-900 text-blue-600 dark:text-blue-400 shadow-xs'
+                    ? 'bg-white dark:bg-purple-900/70 text-purple-700 dark:text-purple-200 shadow-xs'
                     : 'text-zinc-500'
                 }`}
               >
@@ -321,9 +314,9 @@ export default function DashboardView() {
             {chartType === 'area' ? (
               <AreaChart data={dailyPercentageData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorDailyRate" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.0} />
+                  <linearGradient id="colorDailyRatePurple" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.45} />
+                    <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
@@ -354,7 +347,7 @@ export default function DashboardView() {
                           <p className="font-bold text-zinc-900 dark:text-zinc-100">
                             {data.date}
                           </p>
-                          <p className="text-blue-600 dark:text-blue-400 font-semibold mt-1">
+                          <p className="text-purple-600 dark:text-purple-400 font-bold mt-1">
                             Completion: {data.percentage}%
                           </p>
                           <p className="text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -371,10 +364,10 @@ export default function DashboardView() {
                   type="monotone"
                   dataKey="percentage"
                   name="Completion %"
-                  stroke="#3B82F6"
+                  stroke="#8B5CF6"
                   strokeWidth={2.5}
                   fillOpacity={1}
-                  fill="url(#colorDailyRate)"
+                  fill="url(#colorDailyRatePurple)"
                 />
               </AreaChart>
             ) : (
@@ -405,7 +398,7 @@ export default function DashboardView() {
                           style={{ backgroundColor: tooltipBg, borderColor: tooltipBorder }}
                         >
                           <p className="font-bold text-zinc-900 dark:text-zinc-100">{data.date}</p>
-                          <p className="text-blue-600 dark:text-blue-400 font-semibold mt-1">
+                          <p className="text-purple-600 dark:text-purple-400 font-bold mt-1">
                             Completion: {data.percentage}%
                           </p>
                           <p className="text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -420,7 +413,7 @@ export default function DashboardView() {
                 <Bar 
                   dataKey="percentage" 
                   name="Completion %" 
-                  fill="#3B82F6" 
+                  fill="#8B5CF6" 
                   radius={[4, 4, 0, 0]} 
                 />
               </BarChart>
@@ -433,13 +426,13 @@ export default function DashboardView() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Main Bar Chart: 2 columns width */}
-        <div className="lg:col-span-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              <ActivityIcon className="w-5 h-5 text-indigo-500" />
+              <ActivityIcon className="w-5 h-5 text-purple-500" />
               Completed vs Not Completed (All Time)
             </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 mb-5">
+            <p className="text-xs text-purple-700/70 dark:text-purple-300/70 mt-0.5 mb-5">
               Total number of successful completions vs missed days for each activity
             </p>
           </div>
@@ -492,7 +485,7 @@ export default function DashboardView() {
                             <p className="text-rose-600 dark:text-rose-400 font-medium">
                               ❌ Missed: {data.missed}
                             </p>
-                            <p className="text-blue-600 dark:text-blue-400 font-semibold pt-1 border-t border-zinc-200 dark:border-zinc-700">
+                            <p className="text-purple-600 dark:text-purple-400 font-bold pt-1 border-t border-purple-100 dark:border-purple-900">
                               Success Rate: {data.rate}%
                             </p>
                           </div>
@@ -526,16 +519,15 @@ export default function DashboardView() {
         </div>
 
         {/* 4. Activity-Wise Completion % (Strengths & Weaknesses) */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+        <div className="bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
               Habit Performance
             </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 mb-4">
+            <p className="text-xs text-purple-700/70 dark:text-purple-300/70 mt-0.5 mb-4">
               All-time success percentage per habit
             </p>
 
-            {/* List with progress bars */}
             <div className="space-y-3.5">
               {activityOverallData.map((act) => (
                 <div key={act.name} className="space-y-1">
@@ -548,12 +540,12 @@ export default function DashboardView() {
                       {act.rate}%
                     </span>
                   </div>
-                  <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-purple-100/50 dark:bg-purple-950/40 h-2 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${act.rate}%`,
-                        backgroundColor: act.color || '#3B82F6',
+                        backgroundColor: act.color || '#8B5CF6',
                       }}
                     />
                   </div>
@@ -563,7 +555,7 @@ export default function DashboardView() {
           </div>
 
           {/* Quick Insights Cards */}
-          <div className="mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
+          <div className="mt-6 pt-4 border-t border-purple-100 dark:border-purple-900/40 space-y-2">
             {strongestHabit && (
               <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2.5">
                 <Award className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -575,10 +567,10 @@ export default function DashboardView() {
             )}
 
             {weakestHabit && (
-              <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-2.5">
-                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+              <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
                 <div className="text-xs">
-                  <span className="text-amber-700 dark:text-amber-300 font-bold">Needs Focus: </span>
+                  <span className="text-purple-700 dark:text-purple-300 font-bold">Needs Focus: </span>
                   <span className="text-zinc-800 dark:text-zinc-200 font-semibold">{weakestHabit.emoji} {weakestHabit.name} ({weakestHabit.rate}%)</span>
                 </div>
               </div>

@@ -1,14 +1,21 @@
 import { SAMPLE_ACTIVITIES, generateSampleLogs } from './seedData.js';
 
-const ACTIVITIES_KEY = 'habit_tracker_activities_v1';
-const LOGS_KEY = 'habit_tracker_logs_v1';
-const THEME_KEY = 'habit_tracker_theme_v1';
+const getActivitiesKey = (userId = 'default') => `habit_tracker_activities_v2_${userId}`;
+const getLogsKey = (userId = 'default') => `habit_tracker_logs_v2_${userId}`;
+const THEME_KEY = 'habit_tracker_theme_v2';
 
-export function loadActivities() {
+export function loadActivities(userId = 'default') {
   try {
-    const raw = localStorage.getItem(ACTIVITIES_KEY);
+    const raw = localStorage.getItem(getActivitiesKey(userId));
     if (!raw) {
-      saveActivities(SAMPLE_ACTIVITIES);
+      // Legacy fallback check
+      const legacyRaw = localStorage.getItem('habit_tracker_activities_v1');
+      if (legacyRaw) {
+        const parsedLegacy = JSON.parse(legacyRaw);
+        saveActivities(parsedLegacy, userId);
+        return parsedLegacy;
+      }
+      saveActivities(SAMPLE_ACTIVITIES, userId);
       return SAMPLE_ACTIVITIES;
     }
     const parsed = JSON.parse(raw);
@@ -22,20 +29,27 @@ export function loadActivities() {
   }
 }
 
-export function saveActivities(activities) {
+export function saveActivities(activities, userId = 'default') {
   try {
-    localStorage.setItem(ACTIVITIES_KEY, JSON.stringify(activities));
+    localStorage.setItem(getActivitiesKey(userId), JSON.stringify(activities));
   } catch (err) {
     console.error('Error saving activities to localStorage:', err);
   }
 }
 
-export function loadLogs(activities = SAMPLE_ACTIVITIES) {
+export function loadLogs(activities = SAMPLE_ACTIVITIES, userId = 'default') {
   try {
-    const raw = localStorage.getItem(LOGS_KEY);
+    const raw = localStorage.getItem(getLogsKey(userId));
     if (!raw) {
+      // Legacy fallback check
+      const legacyRaw = localStorage.getItem('habit_tracker_logs_v1');
+      if (legacyRaw) {
+        const parsedLegacy = JSON.parse(legacyRaw);
+        saveLogs(parsedLegacy, userId);
+        return parsedLegacy;
+      }
       const initialLogs = generateSampleLogs(activities);
-      saveLogs(initialLogs);
+      saveLogs(initialLogs, userId);
       return initialLogs;
     }
     const parsed = JSON.parse(raw);
@@ -43,7 +57,7 @@ export function loadLogs(activities = SAMPLE_ACTIVITIES) {
       return parsed;
     }
     const initialLogs = generateSampleLogs(activities);
-    saveLogs(initialLogs);
+    saveLogs(initialLogs, userId);
     return initialLogs;
   } catch (err) {
     console.error('Error loading logs from localStorage:', err);
@@ -51,9 +65,9 @@ export function loadLogs(activities = SAMPLE_ACTIVITIES) {
   }
 }
 
-export function saveLogs(logs) {
+export function saveLogs(logs, userId = 'default') {
   try {
-    localStorage.setItem(LOGS_KEY, JSON.stringify(logs));
+    localStorage.setItem(getLogsKey(userId), JSON.stringify(logs));
   } catch (err) {
     console.error('Error saving logs to localStorage:', err);
   }
@@ -63,7 +77,6 @@ export function loadTheme() {
   try {
     const saved = localStorage.getItem(THEME_KEY);
     if (saved === 'dark' || saved === 'light') return saved;
-    // Default to system preference or dark for modern vibe
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
@@ -98,24 +111,24 @@ function downloadFile(content, fileName, contentType) {
 /**
  * Export data as JSON file
  */
-export function exportDataAsJson(activities, logs) {
+export function exportDataAsJson(activities, logs, user = null) {
   const exportPayload = {
-    app: 'HabitTracker',
-    version: '1.0.0',
+    app: 'HabitFlow',
+    version: '2.0.0',
     exportDate: new Date().toISOString(),
+    user: user ? { name: user.name, email: user.email } : null,
     activities,
     logs,
   };
   const jsonStr = JSON.stringify(exportPayload, null, 2);
   const dateStr = new Date().toISOString().slice(0, 10);
-  downloadFile(jsonStr, `habit-tracker-backup-${dateStr}.json`, 'application/json');
+  downloadFile(jsonStr, `habitflow-backup-${dateStr}.json`, 'application/json');
 }
 
 /**
  * Export data as CSV file
  */
 export function exportDataAsCsv(activities, logs) {
-  const activityMap = new Map(activities.map((a) => [a.id, a]));
   const rows = [
     ['Date', 'Activity Name', 'Emoji', 'Status', 'Daily Target']
   ];
@@ -138,7 +151,7 @@ export function exportDataAsCsv(activities, logs) {
 
   const csvContent = rows.map((e) => e.join(',')).join('\n');
   const dateStr = new Date().toISOString().slice(0, 10);
-  downloadFile(csvContent, `habit-tracker-export-${dateStr}.csv`, 'text/csv;charset=utf-8;');
+  downloadFile(csvContent, `habitflow-export-${dateStr}.csv`, 'text/csv;charset=utf-8;');
 }
 
 /**
@@ -169,16 +182,16 @@ export function parseImportJson(jsonString) {
 }
 
 /**
- * Reset all data in localStorage
+ * Reset all data for a specific user
  */
-export function clearAllStorage(reseed = false) {
+export function clearAllStorage(userId = 'default', reseed = false) {
   try {
-    localStorage.removeItem(ACTIVITIES_KEY);
-    localStorage.removeItem(LOGS_KEY);
+    localStorage.removeItem(getActivitiesKey(userId));
+    localStorage.removeItem(getLogsKey(userId));
     if (reseed) {
-      saveActivities(SAMPLE_ACTIVITIES);
+      saveActivities(SAMPLE_ACTIVITIES, userId);
       const sampleLogs = generateSampleLogs(SAMPLE_ACTIVITIES);
-      saveLogs(sampleLogs);
+      saveLogs(sampleLogs, userId);
       return { activities: SAMPLE_ACTIVITIES, logs: sampleLogs };
     }
     return { activities: [], logs: {} };

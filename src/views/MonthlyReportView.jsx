@@ -30,8 +30,7 @@ import {
   MONTH_NAMES_SHORT, 
   getTodayKey,
   getPerformanceRating,
-  toDateKey
-} from '../utils/dateUtils';
+} from '../utils/dateUtils.js';
 
 export default function MonthlyReportView() {
   const { activities, logs, setSelectedDate, setActiveTab, theme } = useHabits();
@@ -74,7 +73,7 @@ export default function MonthlyReportView() {
     let sumPercentages = 0;
     let loggedDaysCount = 0;
 
-    let bestDay = null; // { dateKey, percentage, completed, total }
+    let bestDay = null;
     let worstDay = null;
 
     const activityStats = {};
@@ -93,17 +92,14 @@ export default function MonthlyReportView() {
         totalMissed += m.missed;
         sumPercentages += m.percentage;
 
-        // Check best day
         if (!bestDay || m.percentage > bestDay.percentage) {
           bestDay = { dateKey, ...m };
         }
 
-        // Check worst day (with at least 1 tracked)
         if (!worstDay || m.percentage < worstDay.percentage) {
           worstDay = { dateKey, ...m };
         }
 
-        // Tally activity stats for this month
         activities.forEach((act) => {
           const status = dayLogs[act.id];
           if (status === 'completed') {
@@ -128,7 +124,6 @@ export default function MonthlyReportView() {
       ? Math.round(sumPercentages / loggedDaysCount) 
       : 0;
 
-    // Find best & weakest activity this month
     let bestActivity = null;
     let weakestActivity = null;
 
@@ -162,7 +157,7 @@ export default function MonthlyReportView() {
     };
   }, [year, month, activities, logs]);
 
-  // 2. Month-over-Month (MoM) Comparison against previous month
+  // 2. Month-over-Month (MoM) Comparison
   const momComparison = useMemo(() => {
     let prevYear = year;
     let prevMonth = month - 1;
@@ -204,7 +199,7 @@ export default function MonthlyReportView() {
     };
   }, [year, month, activities, logs, monthlyMetrics.averagePercentage]);
 
-  // 3. Weekly Breakdown (Weeks 1 to 5)
+  // 3. Weekly Breakdown
   const weeklyData = useMemo(() => {
     const weeks = [
       { name: 'Week 1', range: '1-7', start: 1, end: 7, completed: 0, missed: 0, totalTracked: 0, sumRate: 0, daysCount: 0 },
@@ -238,30 +233,27 @@ export default function MonthlyReportView() {
     });
   }, [monthlyMetrics.dayDataList]);
 
-  // 4. Performance Rating based on monthly average %
+  // Performance Rating
   const rating = getPerformanceRating(monthlyMetrics.averagePercentage);
 
-  // Calendar Heatmap Grid Structure
-  // First day of this month
-  const firstDayOfWeek = new Date(year, month, 1).getDay(); // 0 = Sunday, 1 = Monday, etc.
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
   const paddingSlots = Array.from({ length: firstDayOfWeek });
 
-  // Heatmap color generator
   const getHeatmapColor = (percentage, hasLogged) => {
     if (!hasLogged) {
-      return 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-400 dark:text-zinc-500 border-zinc-200/60 dark:border-zinc-800';
+      return 'bg-purple-50/50 dark:bg-purple-950/20 text-zinc-400 dark:text-zinc-500 border-purple-100 dark:border-purple-900/30';
     }
     if (percentage === 100) {
-      return 'bg-emerald-600 text-white font-bold border-emerald-500 shadow-xs shadow-emerald-500/20';
+      return 'bg-emerald-600 text-white font-bold border-emerald-500 shadow-sm shadow-emerald-600/30';
     }
     if (percentage >= 75) {
-      return 'bg-emerald-500 text-white font-semibold border-emerald-400';
+      return 'bg-purple-600 text-white font-semibold border-purple-500 shadow-xs shadow-purple-600/20';
     }
     if (percentage >= 50) {
-      return 'bg-amber-400 dark:bg-amber-500 text-zinc-900 font-semibold border-amber-400';
+      return 'bg-violet-400 dark:bg-violet-500 text-white font-semibold border-violet-400';
     }
     if (percentage >= 25) {
-      return 'bg-orange-500 text-white font-semibold border-orange-400';
+      return 'bg-amber-500 text-white font-semibold border-amber-400';
     }
     return 'bg-rose-500 text-white font-semibold border-rose-400';
   };
@@ -271,19 +263,19 @@ export default function MonthlyReportView() {
     setActiveTab('today');
   };
 
-  const gridColor = isDark ? '#27272a' : '#f4f4f5';
-  const textColor = isDark ? '#a1a1aa' : '#71717a';
+  const gridColor = isDark ? '#2e1c4a' : '#f3e8ff';
+  const textColor = isDark ? '#c084fc' : '#7e22ce';
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300 pb-12">
       
       {/* Month Navigator Header */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
         
         <div className="flex items-center gap-3">
           <button
             onClick={handlePrevMonth}
-            className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
+            className="p-2.5 rounded-xl border border-purple-200/70 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
             title="Previous Month"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -291,17 +283,17 @@ export default function MonthlyReportView() {
 
           <div className="text-center sm:text-left min-w-[170px]">
             <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center justify-center sm:justify-start gap-2">
-              <CalendarIcon className="w-5 h-5 text-blue-500" />
+              <CalendarIcon className="w-5 h-5 text-purple-500" />
               <span>{MONTH_NAMES[month]} {year}</span>
             </h2>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            <p className="text-xs text-purple-700/70 dark:text-purple-300/70 mt-0.5 font-medium">
               {monthlyMetrics.loggedDaysCount} tracked days this month
             </p>
           </div>
 
           <button
             onClick={handleNextMonth}
-            className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
+            className="p-2.5 rounded-xl border border-purple-200/70 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
             title="Next Month"
           >
             <ChevronRight className="w-5 h-5" />
@@ -311,7 +303,7 @@ export default function MonthlyReportView() {
         {!isCurrentMonth && (
           <button
             onClick={jumpToCurrentMonth}
-            className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-all active:scale-95 flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-900/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-all active:scale-95 flex items-center gap-1.5"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Current Month</span>
@@ -320,9 +312,9 @@ export default function MonthlyReportView() {
       </div>
 
       {/* Performance Score & Rating Banner */}
-      <div className={`p-5 sm:p-6 rounded-2xl border ${rating.bgColor} ${rating.borderColor} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs`}>
+      <div className="p-5 sm:p-6 rounded-2xl border border-purple-200/80 dark:border-purple-900/50 bg-gradient-to-r from-purple-50/80 via-violet-50/50 to-fuchsia-50/30 dark:from-[#19112e] dark:via-[#130d24] dark:to-[#1a0f30] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-900/80 shadow-xs flex items-center justify-center text-3xl shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-white dark:bg-[#110e1f] shadow-md shadow-purple-600/20 flex items-center justify-center text-3xl shrink-0 border border-purple-100 dark:border-purple-900/40">
             {rating.label === 'Excellent' && '🌟'}
             {rating.label === 'Good' && '💪'}
             {rating.label === 'Average' && '⚖️'}
@@ -330,14 +322,14 @@ export default function MonthlyReportView() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className={`text-sm font-extrabold uppercase tracking-wider ${rating.color}`}>
+              <span className="text-xs font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300">
                 Performance Rating: {rating.label}
               </span>
             </div>
             <h3 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 mt-0.5">
               {monthlyMetrics.averagePercentage}% Monthly Average
             </h3>
-            <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1 max-w-xl">
+            <p className="text-xs text-purple-800/80 dark:text-purple-200/80 mt-1 max-w-xl font-medium">
               {rating.description}
             </p>
           </div>
@@ -345,7 +337,7 @@ export default function MonthlyReportView() {
 
         {/* Month-over-Month Badge */}
         {momComparison.hasData && (
-          <div className="sm:self-center p-3 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-700/60 flex items-center gap-3 shrink-0">
+          <div className="sm:self-center p-3 rounded-xl bg-white/80 dark:bg-[#110e1f]/90 border border-purple-200/80 dark:border-purple-900/60 flex items-center gap-3 shrink-0 shadow-xs">
             <div className={`p-2 rounded-lg ${momComparison.difference >= 0 ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'}`}>
               {momComparison.difference >= 0 ? (
                 <TrendingUp className="w-5 h-5" />
@@ -372,8 +364,8 @@ export default function MonthlyReportView() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Total Completed */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 shadow-xs">
+          <span className="text-xs font-bold uppercase tracking-wider text-purple-700/60 dark:text-purple-300/60">
             Completed Habits
           </span>
           <div className="mt-2 flex items-baseline gap-2">
@@ -386,8 +378,8 @@ export default function MonthlyReportView() {
         </div>
 
         {/* Total Missed */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 shadow-xs">
+          <span className="text-xs font-bold uppercase tracking-wider text-purple-700/60 dark:text-purple-300/60">
             Missed Habits
           </span>
           <div className="mt-2 flex items-baseline gap-2">
@@ -400,8 +392,8 @@ export default function MonthlyReportView() {
         </div>
 
         {/* Best Day & Worst Day */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 shadow-xs">
+          <span className="text-xs font-bold uppercase tracking-wider text-purple-700/60 dark:text-purple-300/60">
             Best & Worst Day
           </span>
           <div className="mt-2 space-y-1">
@@ -422,8 +414,8 @@ export default function MonthlyReportView() {
         </div>
 
         {/* Best and Weakest Activity */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 shadow-xs">
+          <span className="text-xs font-bold uppercase tracking-wider text-purple-700/60 dark:text-purple-300/60">
             Top & Weakest Activity
           </span>
           <div className="mt-2 space-y-1">
@@ -436,7 +428,7 @@ export default function MonthlyReportView() {
               </span>
             </div>
             <div className="text-xs flex items-center justify-between">
-              <span className="text-amber-600 dark:text-amber-400 font-bold">Weakest:</span>
+              <span className="text-purple-600 dark:text-purple-400 font-bold">Weakest:</span>
               <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate max-w-[130px]">
                 {monthlyMetrics.weakestActivity 
                   ? `${monthlyMetrics.weakestActivity.activity.emoji} ${monthlyMetrics.weakestActivity.activity.name} (${monthlyMetrics.weakestActivity.rate}%)` 
@@ -450,14 +442,14 @@ export default function MonthlyReportView() {
       </div>
 
       {/* Calendar Heatmap Section */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs">
+      <div className="bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5 text-emerald-500" />
+              <CalendarIcon className="w-5 h-5 text-purple-500" />
               Calendar Completion Heatmap
             </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            <p className="text-xs text-purple-700/70 dark:text-purple-300/70 mt-0.5">
               Click on any day to inspect and edit your habits for that date
             </p>
           </div>
@@ -466,16 +458,16 @@ export default function MonthlyReportView() {
           <div className="flex items-center gap-1.5 text-xs text-zinc-500">
             <span>Low</span>
             <div className="w-3.5 h-3.5 rounded-sm bg-rose-500" title="< 25%" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-orange-500" title="25% - 49%" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-amber-400" title="50% - 74%" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-emerald-500" title="75% - 99%" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-amber-500" title="25% - 49%" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-violet-400" title="50% - 74%" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-purple-600" title="75% - 99%" />
             <div className="w-3.5 h-3.5 rounded-sm bg-emerald-600" title="100%" />
             <span>High</span>
           </div>
         </div>
 
         {/* Days of week header */}
-        <div className="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-zinc-400 uppercase tracking-wider">
+        <div className="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-purple-700/60 dark:text-purple-300/60 uppercase tracking-wider">
           <span>Sun</span>
           <span>Mon</span>
           <span>Tue</span>
@@ -487,12 +479,10 @@ export default function MonthlyReportView() {
 
         {/* Grid Cells */}
         <div className="grid grid-cols-7 gap-2">
-          {/* Empty padding slots before day 1 */}
           {paddingSlots.map((_, idx) => (
             <div key={`pad-${idx}`} className="h-16 sm:h-20 rounded-xl bg-transparent" />
           ))}
 
-          {/* Actual days in month */}
           {monthlyMetrics.dayDataList.map((day) => {
             const isToday = day.dateKey === getTodayKey();
             const colorClass = getHeatmapColor(day.metrics.percentage, day.hasLogged);
@@ -503,7 +493,7 @@ export default function MonthlyReportView() {
                 type="button"
                 onClick={() => handleDayClick(day.dateKey)}
                 className={`h-16 sm:h-20 rounded-xl p-2 flex flex-col justify-between border text-left transition-all duration-150 hover:scale-105 active:scale-95 cursor-pointer relative group ${colorClass} ${
-                  isToday ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-zinc-900' : ''
+                  isToday ? 'ring-2 ring-purple-500 ring-offset-2 dark:ring-offset-[#110e1f]' : ''
                 }`}
                 title={`${day.dateKey}: ${day.hasLogged ? `${day.metrics.percentage}% (${day.metrics.completed}/${day.metrics.total})` : 'No logs'}`}
               >
@@ -512,7 +502,7 @@ export default function MonthlyReportView() {
                     {day.dayNum}
                   </span>
                   {isToday && (
-                    <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
+                    <span className="w-2 h-2 rounded-full bg-purple-300 animate-ping" />
                   )}
                 </div>
 
@@ -536,15 +526,15 @@ export default function MonthlyReportView() {
         </div>
       </div>
 
-      {/* Weekly Breakdown Bar Chart (Week 1 to Week 5) */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs">
+      {/* Weekly Breakdown Bar Chart */}
+      <div className="bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              <BarChart2 className="w-5 h-5 text-indigo-500" />
+              <BarChart2 className="w-5 h-5 text-purple-500" />
               Weekly Breakdown (Week 1 to Week 5)
             </h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            <p className="text-xs text-purple-700/70 dark:text-purple-300/70 mt-0.5">
               Average habit completion rate for each week of {MONTH_NAMES[month]}
             </p>
           </div>
@@ -576,12 +566,12 @@ export default function MonthlyReportView() {
                     const data = payload[0].payload;
                     return (
                       <div 
-                        className="p-3 rounded-xl shadow-xl border text-xs bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800"
+                        className="p-3 rounded-xl shadow-xl border text-xs bg-white dark:bg-[#110e1f] border-purple-200 dark:border-purple-800"
                       >
                         <p className="font-bold text-zinc-900 dark:text-zinc-100">
                           {data.name} (Days {data.range})
                         </p>
-                        <p className="text-blue-600 dark:text-blue-400 font-bold mt-1 text-sm">
+                        <p className="text-purple-600 dark:text-purple-400 font-bold mt-1 text-sm">
                           Weekly Average: {data.rate}%
                         </p>
                         <div className="mt-1 text-zinc-500 space-y-0.5">
@@ -597,7 +587,7 @@ export default function MonthlyReportView() {
               <Bar 
                 dataKey="rate" 
                 name="Average Completion %" 
-                fill="#6366F1" 
+                fill="#7C3AED" 
                 radius={[6, 6, 0, 0]} 
               />
             </BarChart>

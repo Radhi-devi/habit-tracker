@@ -7,9 +7,7 @@ import {
   Trash2, 
   Target, 
   Sparkles,
-  GripVertical,
   CheckCircle2,
-  Percent
 } from 'lucide-react';
 import { useHabits } from '../context/HabitContext';
 import ActivityModal from '../components/ActivityModal';
@@ -29,7 +27,6 @@ export default function ManageActivitiesView() {
   const [editingActivity, setEditingActivity] = useState(null);
   const [deletingActivity, setDeletingActivity] = useState(null);
 
-  // Compute all-time stats for each activity
   const getActivityStats = (activityId) => {
     let completed = 0;
     let missed = 0;
@@ -61,19 +58,19 @@ export default function ManageActivitiesView() {
     <div className="space-y-6 animate-in fade-in duration-300 pb-12">
       
       {/* Header with Title & Add Button */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 font-sans">
             Manage Activities
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-purple-700/80 dark:text-purple-300/80 mt-1">
             Add new habits, customize colors and emojis, reorder their display, or edit targets.
           </p>
         </div>
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="self-start sm:self-center px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold shadow-xs shadow-blue-500/20 active:scale-95 transition-all flex items-center gap-2"
+          className="self-start sm:self-center px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm font-bold shadow-xs shadow-purple-600/30 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>Add New Activity</span>
@@ -82,8 +79,8 @@ export default function ManageActivitiesView() {
 
       {/* Activity List */}
       {activities.length === 0 ? (
-        <div className="p-12 text-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
-          <div className="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto mb-3">
+        <div className="p-12 text-center bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl">
+          <div className="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-3">
             <Sparkles className="w-7 h-7" />
           </div>
           <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -94,7 +91,7 @@ export default function ManageActivitiesView() {
           </p>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-all"
+            className="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs shadow-purple-600/30 transition-all cursor-pointer"
           >
             Create Your First Habit
           </button>
@@ -109,12 +106,12 @@ export default function ManageActivitiesView() {
             return (
               <div
                 key={activity.id}
-                className="group relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 rounded-2xl p-4 sm:p-5 transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="group relative overflow-hidden bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 hover:border-purple-300 dark:hover:border-purple-800 rounded-2xl p-4 sm:p-5 transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 {/* Left Accent color bar */}
                 <div
                   className="absolute top-0 bottom-0 left-0 w-1.5"
-                  style={{ backgroundColor: activity.color || '#3B82F6' }}
+                  style={{ backgroundColor: activity.color || '#8B5CF6' }}
                 />
 
                 {/* Left section: Reorder controls + Info */}
@@ -129,7 +126,7 @@ export default function ManageActivitiesView() {
                       className={`p-1.5 rounded-lg border text-xs transition-all ${
                         isFirst
                           ? 'border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
-                          : 'border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 active:scale-95'
+                          : 'border-purple-200/70 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-300 active:scale-95 cursor-pointer'
                       }`}
                       title="Move up"
                     >
@@ -142,7 +139,7 @@ export default function ManageActivitiesView() {
                       className={`p-1.5 rounded-lg border text-xs transition-all ${
                         isLast
                           ? 'border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-700 cursor-not-allowed'
-                          : 'border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 active:scale-95'
+                          : 'border-purple-200/70 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-300 active:scale-95 cursor-pointer'
                       }`}
                       title="Move down"
                     >
@@ -152,8 +149,8 @@ export default function ManageActivitiesView() {
 
                   {/* Emoji Avatar */}
                   <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-xs border border-zinc-100 dark:border-zinc-800"
-                    style={{ backgroundColor: `${activity.color || '#3B82F6'}18` }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-xs border border-purple-100 dark:border-purple-900/30"
+                    style={{ backgroundColor: `${activity.color || '#8B5CF6'}18` }}
                   >
                     {activity.emoji || '⭐'}
                   </div>
@@ -166,15 +163,15 @@ export default function ManageActivitiesView() {
                       </h4>
                       <div 
                         className="w-2.5 h-2.5 rounded-full" 
-                        style={{ backgroundColor: activity.color || '#3B82F6' }}
+                        style={{ backgroundColor: activity.color || '#8B5CF6' }}
                         title={`Color: ${activity.color}`}
                       />
                     </div>
 
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                       {activity.target && (
-                        <span className="flex items-center gap-1 font-medium text-zinc-700 dark:text-zinc-300">
-                          <Target className="w-3.5 h-3.5 text-zinc-400" />
+                        <span className="flex items-center gap-1 font-medium text-purple-700 dark:text-purple-300">
+                          <Target className="w-3.5 h-3.5 text-purple-400" />
                           Target: {activity.target}
                         </span>
                       )}
@@ -192,16 +189,16 @@ export default function ManageActivitiesView() {
                   <button
                     type="button"
                     onClick={() => setEditingActivity(activity)}
-                    className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95"
+                    className="px-3 py-1.5 rounded-xl border border-purple-200/70 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                   >
-                    <Pencil className="w-3.5 h-3.5 text-zinc-500" />
+                    <Pencil className="w-3.5 h-3.5 text-purple-500" />
                     <span>Edit</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setDeletingActivity(activity)}
-                    className="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95"
+                    className="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5 text-rose-500" />
                     <span>Delete</span>

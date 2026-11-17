@@ -17,7 +17,7 @@ import {
   getTodayKey, 
   formatDisplayDate, 
   getDailyMetrics 
-} from '../utils/dateUtils';
+} from '../utils/dateUtils.js';
 import ActivityModal from '../components/ActivityModal';
 
 export default function TodayView() {
@@ -29,7 +29,6 @@ export default function TodayView() {
     toggleActivityStatus,
     addActivity,
     streakMetrics,
-    setActiveTab
   } = useHabits();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -62,14 +61,14 @@ export default function TodayView() {
     <div className="space-y-6 animate-in fade-in duration-300 pb-12">
       
       {/* Date Header & Navigator */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-xs">
+      <div className="bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl p-4 sm:p-5 shadow-xs">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           
           {/* Day Navigation */}
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
             <button
               onClick={handlePrevDay}
-              className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
+              className="p-2.5 rounded-xl border border-purple-200/70 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
               title="Previous Day"
               aria-label="Previous Day"
             >
@@ -78,11 +77,11 @@ export default function TodayView() {
 
             <div className="text-center sm:text-left px-2">
               <div className="flex items-center justify-center sm:justify-start gap-2">
-                <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-lg sm:text-xl font-black text-zinc-900 dark:text-zinc-100">
                   {formatDisplayDate(selectedDate, { relative: true })}
                 </h2>
                 {isViewingToday && (
-                  <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30">
                     Live Today
                   </span>
                 )}
@@ -94,7 +93,7 @@ export default function TodayView() {
 
             <button
               onClick={handleNextDay}
-              className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
+              className="p-2.5 rounded-xl border border-purple-200/70 dark:border-purple-900/50 hover:bg-purple-50 dark:hover:bg-purple-950/40 text-zinc-700 dark:text-zinc-300 transition-all active:scale-95"
               title="Next Day"
               aria-label="Next Day"
             >
@@ -107,20 +106,20 @@ export default function TodayView() {
             {!isViewingToday && (
               <button
                 onClick={jumpToToday}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-all active:scale-95 flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-900/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-all active:scale-95 flex items-center gap-1.5"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Jump to Today</span>
               </button>
             )}
 
-            {/* Hidden native date input styled as button */}
+            {/* Native date input styled as button */}
             <div className="relative">
               <label 
                 htmlFor="date-picker-input" 
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 dark:bg-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700/60 cursor-pointer transition-all active:scale-95"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-purple-200/70 dark:border-purple-900/50 bg-white dark:bg-[#110e1f] text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 cursor-pointer transition-all active:scale-95"
               >
-                <CalendarIcon className="w-4 h-4 text-zinc-500" />
+                <CalendarIcon className="w-4 h-4 text-purple-500" />
                 <span>Pick Date</span>
               </label>
               <input
@@ -137,11 +136,11 @@ export default function TodayView() {
       </div>
 
       {/* Progress & Live Percentage Bar */}
-      <div className="bg-gradient-to-br from-white via-zinc-50 to-blue-50/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-blue-950/20 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs">
+      <div className="bg-gradient-to-br from-white via-purple-50/20 to-purple-100/30 dark:from-[#110e1f] dark:via-[#110e1f] dark:to-purple-950/30 border border-purple-100 dark:border-purple-900/40 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              <span className="text-xs font-bold uppercase tracking-wider text-purple-800/60 dark:text-purple-300/60">
                 {isViewingToday ? "Today's Progress" : "Day Progress"}
               </span>
               {metrics.percentage === 100 && metrics.total > 0 && (
@@ -155,14 +154,14 @@ export default function TodayView() {
               <span className="text-4xl sm:text-5xl font-black tracking-tight text-zinc-900 dark:text-white font-sans">
                 {metrics.percentage}%
               </span>
-              <span className="text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400">
+              <span className="text-xs sm:text-sm font-semibold text-purple-700/80 dark:text-purple-300/80">
                 ({metrics.completed} of {metrics.total} completed)
               </span>
             </div>
           </div>
 
           {/* Quick status counters */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50">
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
               <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">
@@ -177,25 +176,25 @@ export default function TodayView() {
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
-              <div className="w-2.5 h-2.5 rounded-full bg-zinc-400" />
-              <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/60 dark:border-purple-900/40">
+              <div className="w-2.5 h-2.5 rounded-full bg-purple-400" />
+              <span className="text-xs font-bold text-purple-700 dark:text-purple-300">
                 {metrics.pending} Pending
               </span>
             </div>
           </div>
         </div>
 
-        {/* Progress Bar with smooth fill */}
-        <div className="mt-5 w-full bg-zinc-200 dark:bg-zinc-800 h-3.5 rounded-full overflow-hidden p-0.5">
+        {/* Progress Bar with smooth purple gradient fill */}
+        <div className="mt-5 w-full bg-purple-100/60 dark:bg-purple-950/50 h-3.5 rounded-full overflow-hidden p-0.5 border border-purple-200/40 dark:border-purple-900/30">
           <div
             className={`h-full rounded-full transition-all duration-500 ease-out ${
               metrics.percentage >= 100
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-sm shadow-emerald-500/50'
+                ? 'bg-gradient-to-r from-purple-600 via-fuchsia-500 to-emerald-400 shadow-md shadow-purple-500/40'
                 : metrics.percentage >= 60
-                ? 'bg-gradient-to-r from-blue-500 to-indigo-500'
+                ? 'bg-gradient-to-r from-purple-600 to-violet-500'
                 : metrics.percentage > 0
-                ? 'bg-gradient-to-r from-amber-500 to-rose-400'
+                ? 'bg-gradient-to-r from-amber-500 to-purple-500'
                 : 'bg-transparent'
             }`}
             style={{ width: `${Math.min(100, Math.max(0, metrics.percentage))}%` }}
@@ -206,12 +205,12 @@ export default function TodayView() {
       {/* Activity List Section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          <h3 className="text-xs font-black uppercase tracking-wider text-purple-800/70 dark:text-purple-300/70">
             Activities ({activities.length})
           </h3>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
+            className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center gap-1 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Activity</span>
@@ -219,9 +218,8 @@ export default function TodayView() {
         </div>
 
         {activities.length === 0 ? (
-          /* Empty state */
-          <div className="p-8 text-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto mb-3">
+          <div className="p-8 text-center bg-white dark:bg-[#110e1f] border border-purple-100 dark:border-purple-900/40 rounded-2xl">
+            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-3">
               <Sparkles className="w-6 h-6" />
             </div>
             <h4 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
@@ -232,42 +230,41 @@ export default function TodayView() {
             </p>
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl shadow-xs transition-all active:scale-95"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl shadow-xs shadow-purple-600/30 transition-all active:scale-95"
             >
               Add Your First Habit
             </button>
           </div>
         ) : (
-          /* List of Activity Rows */
           <div className="space-y-2.5">
             {activities.map((activity) => {
-              const status = dayLogs[activity.id]; // 'completed' | 'missed' | undefined
+              const status = dayLogs[activity.id];
               const isCompleted = status === 'completed';
               const isMissed = status === 'missed';
 
               return (
                 <div
                   key={activity.id}
-                  className={`group relative overflow-hidden bg-white dark:bg-zinc-900 border transition-all duration-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                  className={`group relative overflow-hidden bg-white dark:bg-[#110e1f] border transition-all duration-200 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                     isCompleted
                       ? 'border-emerald-500/40 bg-emerald-50/20 dark:bg-emerald-950/10 shadow-xs'
                       : isMissed
                       ? 'border-rose-500/40 bg-rose-50/20 dark:bg-rose-950/10 shadow-xs'
-                      : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
+                      : 'border-purple-100 dark:border-purple-900/40 hover:border-purple-300 dark:hover:border-purple-800'
                   }`}
                 >
                   {/* Left accent color bar */}
                   <div
                     className="absolute top-0 bottom-0 left-0 w-1.5"
-                    style={{ backgroundColor: activity.color || '#3B82F6' }}
+                    style={{ backgroundColor: activity.color || '#8B5CF6' }}
                   />
 
                   {/* Activity Info */}
                   <div className="flex items-center gap-3.5 pl-2">
                     <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-xs border border-zinc-100 dark:border-zinc-800 transition-transform group-hover:scale-105"
+                      className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-xs border border-purple-100 dark:border-purple-900/30 transition-transform group-hover:scale-105"
                       style={{
-                        backgroundColor: `${activity.color || '#3B82F6'}15`,
+                        backgroundColor: `${activity.color || '#8B5CF6'}18`,
                       }}
                     >
                       {activity.emoji || '⭐'}
@@ -278,7 +275,6 @@ export default function TodayView() {
                         <h4 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                           {activity.name}
                         </h4>
-                        {/* Status chip */}
                         {isCompleted && (
                           <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                             Completed
@@ -293,7 +289,7 @@ export default function TodayView() {
 
                       {activity.target ? (
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 flex items-center gap-1.5 font-medium">
-                          <Target className="w-3.5 h-3.5 text-zinc-400" />
+                          <Target className="w-3.5 h-3.5 text-purple-400" />
                           Target: <span className="text-zinc-700 dark:text-zinc-300 font-semibold">{activity.target}</span>
                         </p>
                       ) : (
@@ -306,13 +302,12 @@ export default function TodayView() {
 
                   {/* Two BIG Action Buttons: Tick & Cross */}
                   <div className="flex items-center gap-3 self-end sm:self-center w-full sm:w-auto">
-                    {/* Tick = Completed Button */}
                     <button
                       type="button"
                       onClick={() => toggleActivityStatus(activity.id, 'completed')}
                       className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-150 active:scale-95 cursor-pointer ${
                         isCompleted
-                          ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-zinc-900'
+                          ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-[#110e1f]'
                           : 'bg-zinc-100 hover:bg-emerald-50 dark:bg-zinc-800 dark:hover:bg-emerald-950/30 text-zinc-600 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 border border-zinc-200 dark:border-zinc-700'
                       }`}
                       title={isCompleted ? 'Click to uncheck (set back to pending)' : 'Mark as Completed'}
@@ -321,13 +316,12 @@ export default function TodayView() {
                       <span>{isCompleted ? 'Done' : 'Complete'}</span>
                     </button>
 
-                    {/* Cross = Not Completed Button */}
                     <button
                       type="button"
                       onClick={() => toggleActivityStatus(activity.id, 'missed')}
                       className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all duration-150 active:scale-95 cursor-pointer ${
                         isMissed
-                          ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30 ring-2 ring-rose-500 ring-offset-2 dark:ring-offset-zinc-900'
+                          ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30 ring-2 ring-rose-500 ring-offset-2 dark:ring-offset-[#110e1f]'
                           : 'bg-zinc-100 hover:bg-rose-50 dark:bg-zinc-800 dark:hover:bg-rose-950/30 text-zinc-600 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400 border border-zinc-200 dark:border-zinc-700'
                       }`}
                       title={isMissed ? 'Click to uncheck (set back to pending)' : 'Mark as Not Completed'}

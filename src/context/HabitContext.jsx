@@ -9,13 +9,18 @@ import {
   clearAllStorage,
   exportDataAsJson,
   exportDataAsCsv,
-} from '../utils/storage';
-import { getTodayKey, getDailyMetrics, calculateStreaks } from '../utils/dateUtils';
-import { triggerCelebration } from '../utils/confetti';
+} from '../utils/storage.js';
+import { getTodayKey, getDailyMetrics, calculateStreaks } from '../utils/dateUtils.js';
+import { triggerCelebration } from '../utils/confetti.js';
+import { useAuth } from './AuthContext';
+import { initFirebaseService, doc, setDoc, getDoc, onSnapshot } from '../utils/firebase.js';
 
 const HabitContext = createContext(null);
 
 export function HabitProvider({ children }) {
+  const { currentUser } = useAuth();
+  const userId = currentUser ? currentUser.id : 'guest';
+
   // Theme state
   const [theme, setThemeState] = useState(() => loadTheme());
 
@@ -34,14 +39,14 @@ export function HabitProvider({ children }) {
     setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Activities state
+  // Activities state per user
   const [activities, setActivities] = useState(() => {
-    const loaded = loadActivities();
+    const loaded = loadActivities(userId);
     return [...loaded].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   });
 
-  // Logs state
-  const [logs, setLogs] = useState(() => loadLogs(activities));
+  // Logs state per user
+  const [logs, setLogs] = useState(() => loadLogs(activities, userId));
 
   // Selected date for daily tracking
   const [selectedDate, setSelectedDate] = useState(() => getTodayKey());
@@ -49,20 +54,73 @@ export function HabitProvider({ children }) {
   // Active navigation tab: 'today' | 'dashboard' | 'monthly' | 'activities'
   const [activeTab, setActiveTab] = useState('today');
 
-  // Keep localStorage updated when activities change
+  // Reload activities and logs when userId changes
+  useEffect(() => {
+    const userActs = loadActivities(userId);
+    const sorted = [...userActs].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    setActivities(sorted);
+    setLogs(loadLogs(sorted, userId));
+
+    // If Firebase cloud user, subscribe to Firestore document
+    const service = initFirebaseService();
+    if (service.isReady && service.db && currentUser?.isCloud) {
+      try {
+        const userDocRef = doc(service.db, 'users', userId);
+        const unsub = onSnapshot(userDocRef, (snap) => {
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.activities && Array.isArray(data.activities)) {
+              setActivities(data.activities);
+              saveActivities(data.activities, userId);
+            }
+            if (data.logs && typeof data.logs === 'object') {
+              setLogs(data.logs);
+              saveLogs(data.logs, userId);
+            }
+          }
+        });
+        return () => unsub();
+      } catch (err) {
+        console.error('Firestore sync error:', err);
+      }
+    }
+  }, [userId]);
+
+  // Sync to Cloud Firestore if connected
+  const syncToCloud = async (newActivities, newLogs) => {
+    const service = initFirebaseService();
+    if (service.isReady && service.db && currentUser?.isCloud) {
+      try {
+        const userDocRef = doc(service.db, 'users', userId);
+        await setDoc(userDocRef, {
+          activities: newActivities,
+          logs: newLogs,
+          updatedAt: new Date().toISOString(),
+          email: currentUser.email,
+          name: currentUser.name,
+        }, { merge: true });
+      } catch (err) {
+        console.error('Failed to sync to Firestore:', err);
+      }
+    }
+  };
+
+  // Keep localStorage and Cloud updated when activities change
   const updateActivitiesState = (newActivities) => {
     const sorted = [...newActivities].map((act, idx) => ({
       ...act,
       order: idx,
     }));
     setActivities(sorted);
-    saveActivities(sorted);
+    saveActivities(sorted, userId);
+    syncToCloud(sorted, logs);
   };
 
-  // Keep localStorage updated when logs change
+  // Keep localStorage and Cloud updated when logs change
   const updateLogsState = (newLogs) => {
     setLogs(newLogs);
-    saveLogs(newLogs);
+    saveLogs(newLogs, userId);
+    syncToCloud(activities, newLogs);
   };
 
   // Toggle or switch an activity's status for the selected date
@@ -92,19 +150,20 @@ export function HabitProvider({ children }) {
         }
       }
 
-      saveLogs(nextLogs);
+      saveLogs(nextLogs, userId);
+      syncToCloud(activities, nextLogs);
       return nextLogs;
     });
   };
 
   // Add new activity
-  const addActivity = ({ name, emoji = '⭐', color = '#3B82F6', target = '' }) => {
+  const addActivity = ({ name, emoji = '⭐', color = '#8B5CF6', target = '' }) => {
     const newId = `act_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const newActivity = {
       id: newId,
       name: name.trim(),
       emoji: emoji.trim() || '⭐',
-      color: color || '#3B82F6',
+      color: color || '#8B5CF6',
       target: target.trim(),
       order: activities.length,
       createdAt: new Date().toISOString(),
@@ -138,7 +197,7 @@ export function HabitProvider({ children }) {
     updateActivitiesState(filtered);
   };
 
-  // Reorder activities by swapping or moving
+  // Move activity up or down
   const moveActivity = (id, direction) => {
     const index = activities.findIndex((a) => a.id === id);
     if (index === -1) return;
@@ -151,24 +210,16 @@ export function HabitProvider({ children }) {
     updateActivitiesState(reordered);
   };
 
-  // Reorder drag and drop helper
-  const reorderActivities = (sourceIndex, destinationIndex) => {
-    if (sourceIndex === destinationIndex) return;
-    const reordered = [...activities];
-    const [moved] = reordered.splice(sourceIndex, 1);
-    reordered.splice(destinationIndex, 0, moved);
-    updateActivitiesState(reordered);
-  };
-
-  // Reset all data
+  // Reset all data for current user
   const resetAllData = (withSeed = true) => {
-    const { activities: newActs, logs: newLogs } = clearAllStorage(withSeed);
+    const { activities: newActs, logs: newLogs } = clearAllStorage(userId, withSeed);
     setActivities(newActs);
     setLogs(newLogs);
     setSelectedDate(getTodayKey());
+    syncToCloud(newActs, newLogs);
   };
 
-  // Import JSON backup
+  // Import backup
   const importBackup = ({ activities: importedActs, logs: importedLogs }) => {
     const sorted = [...importedActs].map((act, idx) => ({
       ...act,
@@ -179,7 +230,7 @@ export function HabitProvider({ children }) {
   };
 
   // Export helpers
-  const handleExportJson = () => exportDataAsJson(activities, logs);
+  const handleExportJson = () => exportDataAsJson(activities, logs, currentUser);
   const handleExportCsv = () => exportDataAsCsv(activities, logs);
 
   // Computed metrics for currently selected date
@@ -208,7 +259,6 @@ export function HabitProvider({ children }) {
         updateActivity,
         deleteActivity,
         moveActivity,
-        reorderActivities,
         resetAllData,
         importBackup,
         exportJson: handleExportJson,
