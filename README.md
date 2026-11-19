@@ -1,10 +1,8 @@
-#  HabitFlow — Habit & Activity Tracker (Purple Edition)
+#  HabitFlow — Habit & Activity Tracker 
 
-A clean, modern, responsive Habit & Activity Tracker web application built with **React**, **Vite**, **Tailwind CSS**, and **Recharts**. Fully functional offline with local account isolation and cross-browser cloud synchronization using **Google Firebase**.
+A clean, modern, responsive Habit & Activity Tracker web application built with **React**, **Vite**, **Tailwind CSS**, and **Recharts**. Fully functional offline with local account isolation and cross-browser cloud synchronization using **Google Firebase**
 
----
-
-## 🎨 Purple Edition & Authentication Highlights
+##  Purple Edition & Authentication Highlights
 
 - **Vibrant Purple Theme**: Elegant royal purple, violet, and indigo color scheme with ambient glows, styled dark/light mode, and purple chart accents.
 - **Proper Authentication**:
@@ -13,9 +11,7 @@ A clean, modern, responsive Habit & Activity Tracker web application built with 
   - **Cross-Browser Cloud Sync**: Built-in Firebase integration that connects all your browsers (Chrome, Edge, Safari, phone, tablet, and Vercel/Netlify live deployments) in real time under your single login!
   - **One-Click Instant Demo**: Instant test account for fast demonstration.
 
----
-
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Navigate to the project directory
 ```bash
@@ -41,7 +37,7 @@ npm run preview -- --port 5173
 
 ---
 
-## 🔄 How to Push Updates to GitHub
+## How to Push Updates to GitHub
 
 Run these commands in your PowerShell / Command Prompt terminal:
 
@@ -58,9 +54,7 @@ git commit -m "feat: purple UI theme overhaul and authentication system"
 git push origin main
 ```
 
----
-
-## 🎯 Core Features
+##  Core Features
 
 ### 1. Daily Tracking (Home Screen)
 - Date navigation with left/right arrows, date picker, and instant "Jump to Today".
